@@ -1,13 +1,25 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from app.router import healthcheck
+
+from app.database import mongo_connection_check
+from app.config import FastAPIConfig, ENV
 
 
-app = FastAPI(title="Salud")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await mongo_connection_check()
+    yield
 
-app.include_router(healthcheck.router)
-app.include_router(healthcheck.router, prefix="/api/v1")
+
+app = FastAPI(**FastAPIConfig.dict(), lifespan=lifespan)
 
 
 @app.get("/")
 def chekee():
-    return {"status": "de pana banana"}
+    return {
+        "status": "asdasde pana Banana",
+        "name": app.title,
+        "version": app.version,
+        "env": ENV,
+    }
