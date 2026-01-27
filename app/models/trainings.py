@@ -18,6 +18,7 @@ class HRZone(Metric):
 
 # El modelo principal que representa todo el JSON
 class Workout(BaseModel):
+    id: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
     activeSeconds: Metric
     averageHR: Metric

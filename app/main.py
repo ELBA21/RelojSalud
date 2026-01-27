@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from app.database import mongo_connection_check
 from app.config import FastAPIConfig, ENV
 
+from app.router.trainings import router as trainings_router
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -23,3 +25,6 @@ def chekee():
         "version": app.version,
         "env": ENV,
     }
+
+
+app.include_router(trainings_router)
