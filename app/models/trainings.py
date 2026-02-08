@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 from typing import Optional
 from datetime import datetime
 
@@ -18,8 +18,11 @@ class HRZone(Metric):
 
 # El modelo principal que representa todo el JSON
 class Workout(BaseModel):
+    # Datos poblados por el pydantic
     id: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
+
+    # Datos generales del reloj
     activeSeconds: Metric
     averageHR: Metric
     maxHR: Metric
@@ -31,7 +34,11 @@ class Workout(BaseModel):
     distanceMeters: Metric
     maxPace: Metric
     averageKMPaceSeconds: Metric
-    caloriesBurnt: Metric
+
+    calories: Metric = Field(
+        validation_alias=AliasChoices("active_calories", "caloriesBurnt")
+    )
+    baseAltitude: Optional[Metric] = None
     # Zonas de HR
     hrZoneNa: HRZone
     hrZoneWarmUp: HRZone
@@ -41,7 +48,9 @@ class Workout(BaseModel):
     hrZoneExtreme: HRZone
     # Efectos finales
     aerobicTrainingEffect: Metric
+    anaerobicTrainingEffect: Optional[Metric] = None
     currentWorkoutLoad: Metric
+    maximumOxygenUptake: Optional[Metric] = None
 
     class Config:
         # Esto permite que si envías el JSON tal cual, Pydantic lo entienda
