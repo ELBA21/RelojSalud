@@ -1,6 +1,6 @@
 from app.models.trainings import Workout
 from app.database import MongoDBConnectionManager
-from app.services.utils import load_json_from_path, to_out
+from app.services.utils import load_json_from_path, to_out, get_gpx_path
 
 local_COLLECTION = "trainings_test_4"
 
@@ -28,6 +28,9 @@ async def import_training(training_path: str):
     doc = payload_workout.model_dump()
 
     doc["training_date"] = objeto_fecha
+    gpx_path = get_gpx_path(training_path)
+    if gpx_path != "olaNuro":
+        doc["gpx_path"] = gpx_path
     async with MongoDBConnectionManager() as db:
         result = await db[local_COLLECTION].insert_one(doc)
         created = await db[local_COLLECTION].find_one({"_id": result.inserted_id})

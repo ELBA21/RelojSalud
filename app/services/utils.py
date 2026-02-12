@@ -28,3 +28,21 @@ def load_json_from_path(file_path: str) -> Tuple[Workout, datetime]:
     workout_obj = Workout.model_validate(data)
 
     return workout_obj, fecha_obj
+
+
+def get_gpx_path(file_path: str) -> str:
+    # Se intenta tomar la ruta padre, ir a la carpeta hermana
+    # Y renotrnar ubicacion mas cercana
+    nombre = Path(file_path).stem
+    # print(f"test: {nombre}")
+    gpx_folder = Path(file_path).parent.parent / "GPX_Entrenamiento"
+    # print(gpx_folder)
+    resultados = list(gpx_folder.glob(f"gadgetbridge-track-{nombre}.gpx"))
+    if resultados:
+        # print(f"archivo encontrado {resultados[0]}")
+        archivo = str(resultados[0])
+    else:
+        # print("No se encontro archivo")
+        archivo = "olaNuro"
+    # print(f"ruta absolita para \n {archivo}")
+    return archivo

@@ -52,6 +52,8 @@ class Workout(BaseModel):
     currentWorkoutLoad: Metric
     maximumOxygenUptake: Optional[Metric] = None
 
+    gpx_path: Optional[str] = None
+
     class Config:
         # Esto permite que si envías el JSON tal cual, Pydantic lo entienda
         populate_by_name = True
