@@ -66,7 +66,7 @@ async def get_training_of_the_day(date: datetime) -> dict:
     # averageKMPaceSeconds: Metric
 
 
-async def get_stats_list(
+async def get_stats_list2(
     date_inicio: datetime | None = None,
     date_fin: datetime | None = None,
     activeSeconds: bool = False,
@@ -159,6 +159,25 @@ async def get_stats_list(
             .sort("training_date", 1)
         )
         return await cursor.to_list(1000)
+
+
+async def get_stats_list(
+    fecha_inicio: datetime, fecha_fin: datetime, parametros: list[str]
+) -> list[dict]:
+    output = {"training_date": 1, "_id": 0}
+    for field in Workout.model_fields:
+        if field in parametros:
+            output[str(field)] = 1
+    async with MongoDBConnectionManager() as db:
+        cursor = (
+            db[local_COLLECTION]
+            .find(
+                {"training_date": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+                output,
+            )
+            .sort("training_date", 1)
+        )
+        return await cursor.to_list(400)
 
 
 async def get_fechas_training(date_inicio, date_fin) -> list[datetime]:
