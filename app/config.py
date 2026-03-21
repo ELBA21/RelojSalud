@@ -38,3 +38,8 @@ class SecurityConfig:
 class DatabaseConfig:
     uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
     name = os.getenv("DATABASE_NAME", "mongodb")
+
+
+class TelegramBotConfig:
+    API_KEY = os.getenv("TELEGRAM_BOT_API_KEY", "lawea")
+    USER_ID = os.getenv("TELEGRAM_USER_ID", "6703887943")
