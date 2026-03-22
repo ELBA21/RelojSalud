@@ -1,8 +1,13 @@
-from typing import Tuple, Any
-from app.models.trainings import Workout
+from typing import Tuple, Any, Union
+from app.models.trainings import Workout_trote, Workout_libre
 import json
 from pathlib import Path
 from datetime import datetime
+
+Model_Map = {
+    "trote_training": Workout_trote,
+    "libre_training": Workout_libre,
+}
 
 
 def to_out(doc: dict[str, Any]) -> dict[str, Any]:
@@ -12,10 +17,13 @@ def to_out(doc: dict[str, Any]) -> dict[str, Any]:
     return doc
 
 
-def load_json_from_path(file_path: str) -> Tuple[Workout, datetime]:
+def load_json_from_path(
+    file_path: str,
+) -> Tuple[Union[Workout_trote, Workout_libre], datetime]:
     print(f"Debug: {file_path}")
     path = Path(file_path)
-
+    carpeta_padre = path.parent.name.lower()
+    Workout_class = Model_Map.get(carpeta_padre, Workout_libre)
     # Obtenemos fecha
     nombre = path.stem
     formato = "%Y-%m-%dT%H_%M_%S%z"
@@ -24,9 +32,8 @@ def load_json_from_path(file_path: str) -> Tuple[Workout, datetime]:
 
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
-
-    workout_obj = Workout.model_validate(data)
-
+    data["training_type"] = carpeta_padre
+    workout_obj = Workout_class.model_validate(data)
     return workout_obj, fecha_obj
 
 

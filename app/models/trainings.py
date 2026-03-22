@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, AliasChoices
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, time
 
 
 # Definimos la estructura base de una métrica (la pieza que se repita)
@@ -16,17 +16,39 @@ class HRZone(Metric):
     progress: int
 
 
-# El modelo principal que representa todo el JSON
-class Workout(BaseModel):
-    # Datos poblados por el pydantic
-    id: Optional[str] = None
+class Workout_libre(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
     created_at: datetime = Field(default_factory=datetime.now)
-
-    # Datos generales del reloj
     activeSeconds: Metric
     averageHR: Metric
     maxHR: Metric
     minHR: Optional[Metric] = None
+
+    calories: Metric = Field(
+        validation_alias=AliasChoices("active_calories", "caloriesBurnt")
+    )
+
+    # Zona de HR
+    hrZoneNa: HRZone
+    hrZoneWarmUp: HRZone
+    hrZoneFatBurn: HRZone
+    hrZoneAerobic: HRZone
+    hrZoneAnaerobic: HRZone
+    hrZoneExtreme: HRZone
+
+    # Efectos finales
+    aerobicTrainingEffect: Metric
+    anaerobicTrainingEffect: Optional[Metric] = None
+    currentWorkoutLoad: Metric
+    training_type: str = "libre"
+
+    class Config:
+        # Esto permite que si envías el JSON tal cual, Pydantic lo entienda
+        populate_by_name = True
+
+
+# El modelo principal que representa todo el JSON
+class Workout_trote(Workout_libre):
     maxCadence: Metric
     averageCadence: Metric
     averageStride: Metric
@@ -35,25 +57,16 @@ class Workout(BaseModel):
     maxPace: Metric
     averageKMPaceSeconds: Metric
 
-    calories: Metric = Field(
-        validation_alias=AliasChoices("active_calories", "caloriesBurnt")
-    )
     baseAltitude: Optional[Metric] = None
-    # Zonas de HR
-    hrZoneNa: HRZone
-    hrZoneWarmUp: HRZone
-    hrZoneFatBurn: HRZone
-    hrZoneAerobic: HRZone
-    hrZoneAnaerobic: HRZone
-    hrZoneExtreme: HRZone
-    # Efectos finales
-    aerobicTrainingEffect: Metric
-    anaerobicTrainingEffect: Optional[Metric] = None
-    currentWorkoutLoad: Metric
     maximumOxygenUptake: Optional[Metric] = None
 
     gpx_path: Optional[str] = None
 
-    class Config:
-        # Esto permite que si envías el JSON tal cual, Pydantic lo entienda
-        populate_by_name = True
+
+class Workout_summary(BaseModel):
+    total_workout: int
+    total_calories: int
+    total_time: time
+    first_date: datetime
+    last_date: datetime
+    workout_count: dict[str, int]
