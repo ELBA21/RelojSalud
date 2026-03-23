@@ -66,7 +66,7 @@ class Workout_trote(Workout_libre):
 class Workout_summary(BaseModel):
     total_workout: int
     total_calories: int
-    total_time: time
+    total_time: int  # Segundos quiza
     first_date: datetime
     last_date: datetime
     workout_count: dict[str, int]

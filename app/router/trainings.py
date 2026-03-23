@@ -7,6 +7,7 @@ from app.services.trainings import (
     get_training_of_the_day,
     get_stats_list,
     get_fechas_training,
+    get_time_summary,
 )
 from datetime import datetime
 
@@ -51,6 +52,17 @@ async def get_stats_lists_router(
     ),
 ):
     result = await get_stats_list(fecha_inicio, fecha_fin, parametros)
+    if not result:
+        raise HTTPException(500, "No se concreta la accion")
+    return result
+
+
+@router.get("/time_summary")
+async def get_time_summary_router(
+    fecha_inicio: datetime = Query(example="2026-01-01"),
+    fecha_fin: datetime = Query(example="2026-03-01"),
+):
+    result = await get_time_summary(fecha_inicio, fecha_fin)
     if not result:
         raise HTTPException(500, "No se concreta la accion")
     return result

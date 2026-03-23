@@ -42,7 +42,7 @@ def get_gpx_path(file_path: str) -> str:
     # Y renotrnar ubicacion mas cercana
     nombre = Path(file_path).stem
     # print(f"test: {nombre}")
-    gpx_folder = Path(file_path).parent.parent / "GPX_Entrenamiento"
+    gpx_folder = Path(file_path).parent.parent / "trote_gpx"
     # print(gpx_folder)
     resultados = list(gpx_folder.glob(f"gadgetbridge-track-{nombre}.gpx"))
     if resultados:
